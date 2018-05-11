@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2017
+# Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smiley_Run", "Smiley_Run.csproj", "{D1503C53-5F1C-E1E4-01C8-A517F2A6204C}"
 EndProject
 Global

@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
+    public static int level = 1;
+    public static bool skipUI = false;
+
     //Movement Handler
     public Vector2 velocity = Vector2.zero;
     public Vector2 jumpForce;
@@ -15,7 +18,7 @@ public class PlayerController : MonoBehaviour {
     private Rigidbody2D body2D;
     public bool pause, dead, restart;
     bool canjump;
-    private bool up, down, right;
+    private bool up, down, downRelease, right;
 
     //Reset Handler
     public List<GameObject> curryBowls;
@@ -39,6 +42,7 @@ public class PlayerController : MonoBehaviour {
     public Text countText;
     public Text endText;
     public Text nameText;
+    public Text playText;
 
     //Audio Handler 
     public AudioSource jumpSound, slideSound, deadSound, pickupSound, winSound, attackSound;
@@ -65,32 +69,42 @@ public class PlayerController : MonoBehaviour {
         endText.text = "";
         nameText.text = "Smiley Run";
         SetCountText();
+        if (skipUI)
+        {
+            Reset();
+            skipUI = false;
+        }
     }
 
     void Update()
     {
-        up = Input.GetKey(KeyCode.UpArrow) ? true : false;
-        down = Input.GetKeyDown(KeyCode.DownArrow) ? true : false;
-        right = Input.GetKeyDown(KeyCode.RightArrow) ? true : false;
+        up = Input.GetKey(KeyCode.UpArrow);
+        down = Input.GetKey(KeyCode.DownArrow);
+        //downRelease = Input.GetKeyUp(KeyCode.DownArrow);
+        right = Input.GetKey(KeyCode.RightArrow);
     }
 
 
     void FixedUpdate () 
     {
-        if(!pause || !dead)
+        if(!pause && !dead)
         {
             if (up && canjump)
             {
                 anim.SetBool("canJump", true);
                 body2D.AddForce(jumpForce);
                 canjump = false;
-                jumpSound.Play();
+                //jumpSound.Play();
             }
 
             if (down)
             {
-                anim.SetTrigger("canSlide");
-                slideSound.Play();
+                anim.SetBool("canSlide", true);
+                //slideSound.Play();
+            }
+            else
+            {
+                anim.SetBool("canSlide", false);
             }
 
             if (right && !attacking)
@@ -146,7 +160,7 @@ public class PlayerController : MonoBehaviour {
                 gameObject.SetActive(false);
                 endText.text = "Game Over";
                 nameText.text = "Smiley Run";
-                dead = true;
+                ResetScene();
                 deadSound.Play();
         }
         else if (other.gameObject.CompareTag("Weak_Obstacle"))
@@ -165,7 +179,7 @@ public class PlayerController : MonoBehaviour {
                 gameObject.SetActive(false);
                 endText.text = "Game Over";
                 nameText.text = "Smiley Run";
-                dead = true;
+                ResetScene();
                 deadSound.Play();
             }          
 
@@ -175,23 +189,17 @@ public class PlayerController : MonoBehaviour {
             gameObject.SetActive(false);
             endText.text = "Level Complete";
             nameText.text = "Smiley Run";
-            dead = true;
+            ResetScene();
             winSound.Play();
+            UIManager.unlockedLevel = System.Math.Max(level+1, UIManager.unlockedLevel);
         }
     }
 
-	public void Reset()
+	public void ResetScene()
 	{
+        pause = dead = true;
         count = 0;
-        SetCountText();
         transform.position = startPos;
-
-        pause = dead = false;
-
-        if(!gameObject.activeSelf)
-        {
-            gameObject.SetActive(true);
-        }
  
         if (curryBowls.Count > 0)
         {
@@ -209,6 +217,18 @@ public class PlayerController : MonoBehaviour {
             }
             barrels.Clear();
         }
+
+        playText.text = "Replay";
+    }
+
+    public void Reset()
+    {
+        SetCountText();
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+        pause = dead = false;
     }
 
     void UpdateCollider(float x, float y)

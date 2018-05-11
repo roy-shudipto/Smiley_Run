@@ -6,5 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/smileyRun01.unity
+    path: Assets/Scenes/level1.unity
     guid: def69cd520be9824c8166fde4eb368c6
+  - enabled: 1
+    path: Assets/Scenes/level2.unity
+    guid: 91fe87c99ec84e84391e16cf4f31cfde
